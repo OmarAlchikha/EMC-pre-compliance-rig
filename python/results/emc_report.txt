@@ -1,0 +1,46 @@
+==========================================================================
+CONDUCTED EMISSIONS -- LISN voltage vs CISPR 32 Class B (QP mask)
+==========================================================================
+  baseline                       worst margin  -33.5 dB at   0.30 MHz (level  88.0 dBuV)
+  + snubber only                 worst margin  -33.5 dB at   0.30 MHz (level  88.0 dBuV)
+  + pi-filter only               worst margin  +19.4 dB at   0.30 MHz (level  35.1 dBuV)
+  filter + snubber               worst margin  +19.4 dB at   0.30 MHz (level  35.1 dBuV)
+  filter + snubber + slow edge   worst margin  +19.4 dB at   0.30 MHz (level  35.0 dBuV)
+
+==========================================================================
+RADIATED EMISSIONS -- E at 3 m vs CISPR 32 Class B (scaled to 3 m)
+==========================================================================
+  baseline                           worst margin   -8.5 dB at   41.2 MHz (level  48.9 dBuV/m)
+  mitigated (snub+ferrite+layout)    worst margin  +18.4 dB at   85.3 MHz (level  22.1 dBuV/m)
+
+==========================================================================
+RC SNUBBER DESIGN (ring-frequency method, mitigations.py)
+==========================================================================
+  bare ring: f0 = 41.1 MHz, Z0 = 7.7 ohm, Q = 12.9, Ipk ~ 0.77 A (kappa=0.5 assumed)
+  design:   R = Z0 = 7.7 -> 8.2 ohm (E24), C = 3*Cnode = 1.50 -> 1.5 nF
+  snubbed:  f0 = 20.5 MHz, Q = 0.74, Ipk ~ 0.50 A
+  snubber dissipation: C*Vin^2*fsw = 22 mW (use a 1/4 W resistor; efficiency cost 0.22 points)
+
+==========================================================================
+INPUT PI-FILTER + MIDDLEBROOK CHECK (mitigations.py)
+==========================================================================
+  filter: L = 22 uH, C = 47 uF, corner 4949 Hz
+  damping leg: C_d = 220 uF + R_d = 1.0 ohm (sqrt(L/C) = 0.68 ohm)
+  converter |Zin| (neg.) = 12.7 ohm
+  |Zout,filter| peak: undamped 3.0 ohm (passes only thanks to electrolytic ESR),
+    undamped w/ low-loss parts 27.0 ohm (> |Zin|: RAIL OSCILLATES -- the trap a 'better caps' rev walks into),
+    damped 0.77 ohm -> margin 24.4 dB by design (still 0.99 ohm with near-zero-ESR parts: the margin belongs to the damping leg)
+
+==========================================================================
+EDGE SLOWING AND LAYOUT (mitigations.py)
+==========================================================================
+  tr 100 -> 220 ns: 40 dB/dec corner 3.18 -> 1.45 MHz, 6.8 dB less at HF
+  cost: P_sw 0.24 -> 0.53 W, efficiency 88.2 -> 86.0 %
+  hot loop 2.0 -> 0.5 cm^2: DM radiated -12.0 dB, zero cost
+
+==========================================================================
+H-FIELD PROBE (hardware/h-field-probe.md)
+==========================================================================
+  loop d = 10 mm, A = 78.5 mm^2, L_self ~ 25 nH -> L/R corner 318 MHz
+  transfer at 40 MHz: 24.61 mV per A/m
+  predicted probe voltage over the hot loop at 1 cm, ring line: 77 dBuV (6962 uV) -- ~40 dB above the SDR noise floor: no preamp needed

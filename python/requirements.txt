@@ -1,0 +1,4 @@
+numpy>=1.24
+matplotlib>=3.7
+# only needed for real hardware captures (sdr_scan.py without --synthetic):
+# pyrtlsdr>=0.3

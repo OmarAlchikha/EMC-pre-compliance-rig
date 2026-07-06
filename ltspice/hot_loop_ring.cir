@@ -1,0 +1,40 @@
+* Hot-loop ring, bare vs RC-snubbed -- cross-check for mitigations.py
+*
+* The switching edge is a 12 V step with ~20 ns commutation driving the
+* parasitic tank: L_LOOP = 30 nH (perfboard hot loop, 10 nH/cm rule),
+* C_NODE = 500 pF (SB540 junction C + wiring), R_RING = 0.6 ohm
+* (Rds_on + trace + ESR). Values mirror python/parameters.py exactly.
+*
+* .step runs both variants: Rsnub = 1G disconnects the snubber (bare),
+* Rsnub = 8.2 with Csnub = 1.5 nF is the design from mitigations.py.
+*
+* Expected (verified with ngspice-42; python cross-refs in brackets):
+*   bare:    f_ring = 41.1 MHz [matches parameters.py f_ring exactly],
+*            first overshoot +2.2 V with this 20 ns commutation edge,
+*            still ringing +-0.65 V at t = 150 ns (Q ~ 13)
+*   snubbed: first overshoot +2.3 V -- essentially UNCHANGED -- but dead
+*            (12.000 V) by 150 ns
+* Two lessons the numbers teach:
+*   1. The snubber's value is killing Q (spectral energy at f_ring),
+*      not the first peak. Judge it in the frequency domain.
+*   2. Overshoot amplitude tracks commutation speed: this edge gives an
+*      excitation efficiency kappa ~ 0.2; python/parameters.py uses a
+*      deliberately conservative kappa = 0.5 until the bench supplies
+*      the real number. f_ring and Q -- the quantities the snubber
+*      design depends on -- do not depend on kappa at all.
+* Read ring frequency off V(sw) 12 V crossings (same-direction crossings
+* are one full period apart); extract Q from the log-decrement.
+
+Vedge in 0 PULSE(0 12 10n 20n 20n 4.5u 10u)
+Lloop in mid 30n
+Rring mid sw 0.6
+Cnode sw 0 500p
+
+* RC snubber (stepped in/out)
+Rsnub sw sn {RSN}
+Csnub sn 0 1.5n
+
+.step param RSN list 1G 8.2
+.tran 0.05n 450n 0 0.05n
+.probe V(sw) I(Lloop)
+.end
