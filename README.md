@@ -10,11 +10,10 @@ layout) before a single part is ordered.
 **DUT values are the real Project-1 numbers**, taken from
 `buck-converter/python-model/parameters.py` and `design_report.txt`:
 12 V→5 V, 2 A, fsw = 100 kHz, D = 0.454, ~100 ns edges, IRF9540N + SB540
-hot loop, 470 µF/50 mΩ + 1 µF input caps. The buck's `measurements/`
-folder is still empty (board not yet built), so there is no bench data on
-either side yet — every physical parasitic in this model is an **estimate
-flagged in `python/parameters.py` with the measurement that replaces it**.
-The rig exists to produce those measurements.
+hot loop, 470 µF/50 mΩ + 1 µF input caps. Bench data doesn't exist yet on
+either the converter or this rig, so every physical parasitic in this model
+is an **estimate flagged in `python/parameters.py` with the measurement
+that replaces it**. The rig exists to produce those measurements.
 
 ## Headline results (all from `python/run_all.py` → `results/`)
 
